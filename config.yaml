@@ -6,6 +6,12 @@ hmac_secret: "default-secret-key-change-in-production"
 # Lower values detect more entities but may have false positives
 default_confidence_threshold: 0.5
 
+# Redaction strategy: "replace", "mask", or "hash"
+# hash: HMAC-SHA1 with format <entity_type>:<hash> (default, consistent)
+# replace: Simple [REDACTED] replacement
+# mask: Replace with asterisks
+redaction_strategy: "hash"
+
 # Processing options
 processing:
   # Maximum number of files to process (-1 = unlimited)

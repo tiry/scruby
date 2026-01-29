@@ -36,6 +36,7 @@ class Config:
 
     hmac_secret: str
     default_confidence_threshold: float
+    redaction_strategy: str
     processing: ProcessingConfig
     presidio: PresidioConfig
 
@@ -111,6 +112,7 @@ def load_config(config_path: str | Path = "config.yaml") -> Config:
         config = Config(
             hmac_secret=data.get("hmac_secret", ""),
             default_confidence_threshold=data.get("default_confidence_threshold", 0.5),
+            redaction_strategy=data.get("redaction_strategy", "hash"),
             processing=processing,
             presidio=presidio,
         )
@@ -136,6 +138,7 @@ def get_default_config() -> Config:
     return Config(
         hmac_secret="default-secret-key-change-in-production",
         default_confidence_threshold=0.5,
+        redaction_strategy="hash",
         processing=ProcessingConfig(max_files=-1, verbose=False),
         presidio=PresidioConfig(
             language="en",

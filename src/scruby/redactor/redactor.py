@@ -1,5 +1,7 @@
 """Document redactor using Presidio."""
 
+import hashlib
+import hmac
 from typing import Any, Dict, List, Optional
 
 from presidio_anonymizer import AnonymizerEngine
@@ -69,20 +71,25 @@ class Redactor:
                 else:
                     strategy = getattr(self.config, "redaction_strategy", "replace")
             
-            # Build operators for anonymization
-            operators = self._build_operators(strategy)
-            
-            # Anonymize text
-            anonymized = self.anonymizer.anonymize(
-                text=text,
-                analyzer_results=results,
-                operators=operators
-            )
+            # Use custom hash implementation for "hash" strategy
+            if strategy == "hash":
+                redacted_text = self._custom_hash_redaction(text, results)
+            else:
+                # Build operators for other strategies
+                operators = self._build_operators(strategy)
+                
+                # Anonymize text
+                anonymized = self.anonymizer.anonymize(
+                    text=text,
+                    analyzer_results=results,
+                    operators=operators
+                )
+                redacted_text = anonymized.text
             
             # Return redacted document
             return {
                 **document,
-                "content": anonymized.text,
+                "content": redacted_text,
                 "metadata": {
                     **document.get("metadata", {}),
                     "redacted_entities": len(results),
@@ -110,7 +117,8 @@ class Redactor:
         elif strategy == "mask":
             operator = OperatorConfig("mask", {"masking_char": "*", "chars_to_mask": 100, "from_end": False})
         elif strategy == "hash":
-            operator = OperatorConfig("hash")
+            # Use hash with entity type prefix format
+            operator = OperatorConfig("hash", {"hash_type": "sha256"})
         elif strategy == "encrypt":
             operator = OperatorConfig("encrypt", {"key": self._get_encryption_key()})
         else:
@@ -126,6 +134,47 @@ class Redactor:
         else:
             key = getattr(self.config, "hmac_secret", "default-key-change-me")
         return key
+    
+    def _custom_hash_redaction(self, text: str, results: List[Any]) -> str:
+        """
+        Perform custom hash-based redaction with entity type prefix.
+        
+        Args:
+            text: Original text
+            results: Analyzer results with entity locations
+            
+        Returns:
+            Text with entities replaced by <ENTITY_TYPE:hash>
+        """
+        # Get HMAC secret
+        secret = self._get_encryption_key()
+        
+        # Sort results by start position in reverse order to avoid offset issues
+        sorted_results = sorted(results, key=lambda x: x.start, reverse=True)
+        
+        # Replace each entity with hashed version
+        redacted = text
+        for result in sorted_results:
+            entity_text = text[result.start:result.end]
+            entity_type = result.entity_type
+            
+            # Create HMAC-SHA1 hash (shorter than SHA256)
+            hash_digest = hmac.new(
+                secret.encode('utf-8'),
+                entity_text.encode('utf-8'),
+                hashlib.sha1
+            ).hexdigest()
+            
+            # Use first 12 characters for readability (still secure with HMAC)
+            short_digest = hash_digest[:12]
+            
+            # Format: <ENTITY_TYPE:hash>
+            replacement = f"<{entity_type}:{short_digest}>"
+            
+            # Replace in text
+            redacted = redacted[:result.start] + replacement + redacted[result.end:]
+        
+        return redacted
 
 
 class RedactorError(Exception):

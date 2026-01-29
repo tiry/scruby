@@ -1,0 +1,11 @@
+PATIENT MEDICAL RECORD
+
+Patient Name: John Michael Smith
+
+The name is John Michael Smith
+
+Or john michael smith
+
+
+Or john    Michael  smith
+

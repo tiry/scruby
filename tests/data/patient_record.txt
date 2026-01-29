@@ -1,0 +1,29 @@
+PATIENT MEDICAL RECORD
+
+Patient Name: John Michael Smith
+Date of Birth: January 15, 1985
+Social Security Number: 123-45-6789
+Medical Record Number: MRN-2024-789456
+
+Contact Information:
+Address: 456 Oak Street, Boston, MA 02108
+Phone: (617) 555-0123
+Email: john.smith@email.com
+
+Insurance Information:
+Health Plan ID: HP-987654321
+Account Number: ACC-2024-556677
+
+Medical History:
+Patient was admitted on March 20, 2024 for routine examination.
+Prescription Number: RX-2024-445566 was issued for medication.
+Device ID: DEV-SN-998877 (insulin pump) was assigned.
+
+Vehicle Information (for transportation services):
+VIN: 1HGBH41JXMN109186
+
+Additional Notes:
+Patient's IP address for telehealth: 192.168.1.100
+Portal URL: https://patient-portal.hospital.com/john-smith
+
+License Number: DL-MA-S12345678
