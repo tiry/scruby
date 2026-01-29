@@ -37,7 +37,7 @@ jobs:
         
     - name: Run tests with coverage
       run: |
-        pytest tests/ --cov=kg_forge --cov-report=term-missing --cov-report=xml --cov-report=html
+        pytest tests/ --cov=src/scruby --cov-report=term-missing --cov-report=xml --cov-report=html
         
     - name: Generate coverage badge
       run: |
@@ -66,6 +66,9 @@ jobs:
         
         # Copy badge to temp location (outside git working directory)
         cp .github/coverage.svg /tmp/coverage.svg
+        
+        # Remove the coverage.svg from working directory to avoid conflicts
+        rm -f .github/coverage.svg
         
         # Try to fetch and checkout badges branch, or create it if it doesn't exist
         if git fetch origin badges:badges 2>/dev/null; then
