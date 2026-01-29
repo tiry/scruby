@@ -1,0 +1,17 @@
+PATIENT MEDICAL RECORD
+
+Patient Name: Jane Elizabeth Doe
+Date of Birth: March 15, 1985
+SSN: 987-65-4321
+MRN: MRN-2024-123456
+
+Contact:
+Phone: (555) 987-6543
+Email: jane.doe@email.com
+Address: 123 Main Street, Boston, MA 02108
+
+Insurance:
+Health Plan ID: HP-111222333
+Account: ACC-2024-987654
+
+Visit Date: April 10, 2024

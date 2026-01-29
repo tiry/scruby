@@ -111,6 +111,7 @@ class TestConfigValidation:
         config = Config(
             hmac_secret="",
             default_confidence_threshold=0.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -125,6 +126,7 @@ class TestConfigValidation:
         config = Config(
             hmac_secret="test",
             default_confidence_threshold=-0.1,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -141,6 +143,7 @@ class TestConfigValidation:
         config = Config(
             hmac_secret="test",
             default_confidence_threshold=1.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -157,6 +160,7 @@ class TestConfigValidation:
         config1 = Config(
             hmac_secret="test",
             default_confidence_threshold=0.0,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -165,6 +169,7 @@ class TestConfigValidation:
         config2 = Config(
             hmac_secret="test",
             default_confidence_threshold=1.0,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -175,6 +180,7 @@ class TestConfigValidation:
         config = Config(
             hmac_secret="test",
             default_confidence_threshold=0.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-2, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -190,6 +196,7 @@ class TestConfigValidation:
         config1 = Config(
             hmac_secret="test",
             default_confidence_threshold=0.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=-1, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -199,6 +206,7 @@ class TestConfigValidation:
         config2 = Config(
             hmac_secret="test",
             default_confidence_threshold=0.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=0, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )
@@ -208,6 +216,7 @@ class TestConfigValidation:
         config3 = Config(
             hmac_secret="test",
             default_confidence_threshold=0.5,
+            redaction_strategy="hash",
             processing=ProcessingConfig(max_files=100, verbose=False),
             presidio=PresidioConfig(language="en", spacy_model="en_core_web_lg", entities=[]),
         )

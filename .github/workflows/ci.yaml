@@ -35,6 +35,10 @@ jobs:
         pip install -e .
         pip install pytest pytest-cov coverage-badge
         
+    - name: Download spaCy model
+      run: |
+        python -m spacy download en_core_web_lg
+        
     - name: Run tests with coverage
       run: |
         pytest tests/ --cov=src/scruby --cov-report=term-missing --cov-report=xml --cov-report=html
