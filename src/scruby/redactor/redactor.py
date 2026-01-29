@@ -158,10 +158,16 @@ class Redactor:
             entity_text = text[result.start:result.end]
             entity_type = result.entity_type
             
+            # Normalize entity text for consistent hashing
+            # - Convert to lowercase
+            # - Normalize whitespace (collapse multiple spaces to single, trim)
+            import re
+            normalized_text = re.sub(r'\s+', ' ', entity_text.lower().strip())
+            
             # Create HMAC-SHA1 hash (shorter than SHA256)
             hash_digest = hmac.new(
                 secret.encode('utf-8'),
-                entity_text.encode('utf-8'),
+                normalized_text.encode('utf-8'),
                 hashlib.sha1
             ).hexdigest()
             
