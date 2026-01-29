@@ -42,8 +42,9 @@ class TestRecognizerRegistry:
         registry = RecognizerRegistry()
         recognizers = registry.get_all_recognizers()
         
-        assert len(recognizers) == 3
+        assert len(recognizers) == 4
         entity_types = [r.supported_entities[0] for r in recognizers]
+        assert "US_SSN" in entity_types
         assert "MEDICAL_RECORD_NUMBER" in entity_types
         assert "PRESCRIPTION_NUMBER" in entity_types
         assert "INSURANCE_ID" in entity_types

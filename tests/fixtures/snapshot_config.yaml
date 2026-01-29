@@ -1,0 +1,19 @@
+hmac_secret: "test-snapshot-key-do-not-change"
+default_confidence_threshold: 0.6
+redaction_strategy: "hash"
+
+processing:
+  max_files_per_directory: 1000
+  default_encoding: "utf-8"
+
+presidio:
+  spacy_model: "en_core_web_lg"
+  entities:
+    - PERSON
+    - EMAIL_ADDRESS
+    - PHONE_NUMBER
+    - US_SSN
+    - DATE_TIME
+    - MEDICAL_RECORD_NUMBER
+    - PRESCRIPTION_NUMBER
+    - INSURANCE_ID

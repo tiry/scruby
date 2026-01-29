@@ -3,6 +3,43 @@
 from presidio_analyzer import Pattern, PatternRecognizer
 
 
+class SSNRecognizer(PatternRecognizer):
+    """
+    Recognizer for US Social Security Numbers (SSN).
+    
+    Detects SSN in various formats:
+    - 123-45-6789
+    - 123 45 6789
+    - SSN: 123-45-6789
+    - Social Security Number: 123-45-6789
+    """
+    
+    PATTERNS = [
+        Pattern(
+            name="ssn_dashes",
+            regex=r"\b\d{3}-\d{2}-\d{4}\b",
+            score=0.95  # High score for strong pattern
+        ),
+        Pattern(
+            name="ssn_spaces",
+            regex=r"\b\d{3}\s\d{2}\s\d{4}\b",
+            score=0.95
+        ),
+        Pattern(
+            name="ssn_no_separators",
+            regex=r"\b\d{9}\b",
+            score=0.60  # Lower score as it's less specific
+        ),
+    ]
+    
+    def __init__(self):
+        super().__init__(
+            supported_entity="US_SSN",
+            patterns=self.PATTERNS,
+            context=["ssn", "social security", "social", "security"]
+        )
+
+
 class MRNRecognizer(PatternRecognizer):
     """
     Recognizer for Medical Record Numbers (MRN).

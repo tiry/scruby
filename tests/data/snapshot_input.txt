@@ -1,0 +1,14 @@
+MEDICAL RECORD - SNAPSHOT TEST
+
+Patient: Dr. Sarah Johnson
+Date of Birth: March 15, 1985
+SSN: 123-45-6789
+MRN: MRN-2024-555888
+
+Contact Information:
+Phone: (555) 123-4567
+Email: sarah.j@hospital.com
+
+Visit Date: April 10, 2024
+
+Person: Sarah johnson

@@ -48,6 +48,10 @@ class Pipeline:
         """
         Process documents through the complete redaction pipeline.
         
+        Each document is processed through the entire pipeline (preprocess,
+        redact, postprocess, write) before moving to the next document.
+        This streaming approach is more memory-efficient for large datasets.
+        
         Args:
             input_path: Path to input file or directory
             output_path: Path for output (file/directory/None for stdout)
@@ -63,109 +67,90 @@ class Pipeline:
             PipelineError: If processing fails
         """
         try:
-            # Step 1: Read documents
-            documents = self._read_documents(input_path, reader_type)
+            # Initialize reader and writer once
+            reader = self._create_reader(input_path, reader_type)
+            writer = self._create_writer(output_path, writer_type)
             
-            # Step 2: Preprocess documents
-            documents = self._preprocess_documents(documents, preprocessors)
+            # Process each document through complete pipeline
+            processed_documents = []
             
-            # Step 3: Redact PII
-            documents = self._redact_documents(documents)
+            for document in reader.read():
+                # Process single document through pipeline
+                doc = self._preprocess_document(document, preprocessors)
+                doc = self.redactor.redact(doc)
+                doc = self._postprocess_document(doc, postprocessors)
+                
+                # Write immediately
+                writer.write(doc)
+                
+                # Store for return value
+                processed_documents.append(doc)
             
-            # Step 4: Postprocess documents
-            documents = self._postprocess_documents(documents, postprocessors)
-            
-            # Step 5: Write documents
-            self._write_documents(documents, output_path, writer_type)
-            
-            return documents
+            return processed_documents
             
         except Exception as e:
             raise PipelineError(f"Pipeline processing failed: {e}") from e
     
-    def _read_documents(
+    def _create_reader(
         self,
         input_path: Union[str, Path],
         reader_type: str
-    ) -> List[Dict[str, Any]]:
-        """Read documents using specified reader."""
-        reader = self.reader_registry.create(reader_type, path=input_path)
-        # Convert iterator to list
-        documents = list(reader.read())
-        
-        return documents
+    ):
+        """Create and return a reader instance."""
+        return self.reader_registry.create(reader_type, path=input_path)
     
-    def _preprocess_documents(
+    def _preprocess_document(
         self,
-        documents: List[Dict[str, Any]],
+        document: Dict[str, Any],
         preprocessor_names: Optional[List[str]]
-    ) -> List[Dict[str, Any]]:
-        """Apply preprocessors to documents."""
+    ) -> Dict[str, Any]:
+        """Apply preprocessors to a single document."""
         if not preprocessor_names:
-            return documents
+            return document
         
-        processed = []
-        for doc in documents:
-            for name in preprocessor_names:
-                preprocessor = self.preprocessor_registry.create(name)
-                doc = preprocessor.process(doc)
-            processed.append(doc)
+        doc = document
+        for name in preprocessor_names:
+            preprocessor = self.preprocessor_registry.create(name)
+            doc = preprocessor.process(doc)
         
-        return processed
+        return doc
     
-    def _redact_documents(
-        self,
-        documents: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Redact PII from documents."""
-        redacted = []
-        for doc in documents:
-            redacted_doc = self.redactor.redact(doc)
-            redacted.append(redacted_doc)
-        
-        return redacted
     
-    def _postprocess_documents(
+    def _postprocess_document(
         self,
-        documents: List[Dict[str, Any]],
+        document: Dict[str, Any],
         postprocessor_names: Optional[List[str]]
-    ) -> List[Dict[str, Any]]:
-        """Apply postprocessors to documents."""
+    ) -> Dict[str, Any]:
+        """Apply postprocessors to a single document."""
         if not postprocessor_names:
-            return documents
+            return document
         
-        processed = []
-        for doc in documents:
-            for name in postprocessor_names:
-                postprocessor = self.postprocessor_registry.create(name)
-                doc = postprocessor.process(doc)
-            processed.append(doc)
+        doc = document
+        for name in postprocessor_names:
+            postprocessor = self.postprocessor_registry.create(name)
+            doc = postprocessor.process(doc)
         
-        return processed
+        return doc
     
-    def _write_documents(
+    def _create_writer(
         self,
-        documents: List[Dict[str, Any]],
         output_path: Optional[Union[str, Path]],
         writer_type: str
-    ) -> None:
-        """Write documents using specified writer."""
+    ):
+        """Create and return a writer instance."""
         # Create writer with appropriate parameters
         if writer_type == "text_file":
             if output_path is None:
                 raise PipelineError("output_path is required for text_file writer")
-            writer = self.writer_registry.create(writer_type, path=output_path)
+            return self.writer_registry.create(writer_type, path=output_path)
         elif writer_type == "stdout":
-            writer = self.writer_registry.create(writer_type)
+            return self.writer_registry.create(writer_type)
         else:
             # For extensibility: try to create with path if provided
             if output_path is not None:
-                writer = self.writer_registry.create(writer_type, path=output_path)
+                return self.writer_registry.create(writer_type, path=output_path)
             else:
-                writer = self.writer_registry.create(writer_type)
-        
-        for doc in documents:
-            writer.write(doc)
+                return self.writer_registry.create(writer_type)
 
 
 class PipelineError(Exception):

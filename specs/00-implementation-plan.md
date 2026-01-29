@@ -231,18 +231,25 @@ All pipeline components follow a **pluggable architecture**:
 
 ---
 
-### Step 12: Documentation
-**Spec**: `specs/12-documentation.md`
+### Step 12: Post-Cleanup Improvements
+**Spec**: `specs/12-post-cleanup.md`
 
 **Goals**:
-- Comprehensive `README.md`:
-  - Project description
-  - Installation instructions (venv, dependencies, spaCy model)
-  - Usage examples
-  - Configuration guide
-  - Architecture overview
-  - Testing instructions
-- Keep documentation updated throughout implementation
+- Standardize component registration (decorator pattern for all)
+- Refactor pipeline to streaming architecture
+- Add snapshot comparison tests
+- Fix SSN detection issues
+- Implement entity conflict resolution
+- Enhance test error messages
+- Document all improvements
+
+**Deliverables**:
+- Consistent decorator-based registration across all components
+- Memory-efficient streaming pipeline
+- Snapshot test infrastructure with deterministic hashing
+- Custom SSN recognizer
+- Priority-based entity conflict resolution
+- Comprehensive improvement documentation
 
 ---
 

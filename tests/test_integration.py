@@ -210,5 +210,73 @@ class TestRealWorldScenarios:
         assert "<US_SSN:" in output_text or "<ORGANIZATION:" in output_text
 
 
+class TestSnapshotComparison:
+    """Test output consistency with snapshot comparison."""
+    
+    def test_snapshot_output_matches_expected(self, tmp_path):
+        """Test that redaction output matches the expected snapshot."""
+        # Use static test files
+        input_file = TEST_DATA_DIR / "snapshot_input.txt"
+        expected_file = TEST_DATA_DIR / "snapshot_expected.txt"
+        output_file = tmp_path / "snapshot_output.txt"
+        
+        # Use fixed config for deterministic hashing
+        config_path = TEST_DATA_DIR.parent / "fixtures" / "snapshot_config.yaml"
+        config = load_config(config_path)
+        pipeline = Pipeline(config=config)
+        
+        # Process the input
+        results = pipeline.process(
+            input_path=str(input_file),
+            output_path=str(output_file),
+            reader_type="text_file",
+            writer_type="text_file"
+        )
+        
+        # Read actual and expected outputs
+        actual_output = output_file.read_text()
+        expected_output = expected_file.read_text()
+        
+        # Compare outputs with detailed diff if they don't match
+        if actual_output != expected_output:
+            import difflib
+            
+            # Generate line-by-line diff
+            expected_lines = expected_output.splitlines(keepends=True)
+            actual_lines = actual_output.splitlines(keepends=True)
+            
+            diff = difflib.unified_diff(
+                expected_lines,
+                actual_lines,
+                fromfile='expected',
+                tofile='actual',
+                lineterm=''
+            )
+            
+            diff_text = '\n'.join(diff)
+            
+            # Also show character-level comparison for debugging
+            error_msg = [
+                "\n" + "=" * 80,
+                "SNAPSHOT TEST FAILED - Output doesn't match expected!",
+                "=" * 80,
+                "\nUnified Diff:",
+                diff_text,
+                "\n" + "-" * 80,
+                f"\nExpected length: {len(expected_output)} chars",
+                f"Actual length:   {len(actual_output)} chars",
+                "\n" + "-" * 80,
+                "\nTo update the snapshot, run:",
+                f"  cp {output_file} {expected_file}",
+                "=" * 80
+            ]
+            
+            pytest.fail('\n'.join(error_msg))
+        
+        # Verify we actually redacted something
+        assert len(results) == 1
+        assert results[0]["metadata"]["redacted_entities"] > 0
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

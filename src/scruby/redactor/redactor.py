@@ -64,6 +64,9 @@ class Redactor:
             # Analyze text for PII
             results = self.analyzer.analyze(text, entities=entities)
             
+            # Resolve overlapping entities
+            results = self._resolve_conflicts(results)
+            
             # Get redaction strategy
             if strategy is None:
                 if isinstance(self.config, dict):
@@ -134,6 +137,83 @@ class Redactor:
         else:
             key = getattr(self.config, "hmac_secret", "default-key-change-me")
         return key
+    
+    def _resolve_conflicts(self, results: List[Any]) -> List[Any]:
+        """
+        Resolve overlapping entity detections.
+        
+        When entities overlap, prioritize:
+        1. Higher confidence scores
+        2. More specific entity types (e.g., US_SSN > ORGANIZATION)
+        3. Longer spans
+        
+        Args:
+            results: List of RecognizerResult objects
+            
+        Returns:
+            Filtered list without overlapping entities
+        """
+        if not results:
+            return results
+        
+        # Define entity type priorities (higher number = higher priority)
+        ENTITY_PRIORITIES = {
+            'US_SSN': 100,
+            'EMAIL_ADDRESS': 95,
+            'PHONE_NUMBER': 90,
+            'CREDIT_CARD': 85,
+            'MEDICAL_RECORD_NUMBER': 80,
+            'PRESCRIPTION_NUMBER': 75,
+            'INSURANCE_ID': 70,
+            'PERSON': 60,
+            'DATE_TIME': 50,
+            'LOCATION': 40,
+            'ORGANIZATION': 30,  # Lower priority for generic types
+            'DEFAULT': 10
+        }
+        
+        def get_priority(result):
+            """Get priority score for an entity."""
+            entity_priority = ENTITY_PRIORITIES.get(result.entity_type, ENTITY_PRIORITIES['DEFAULT'])
+            confidence = result.score
+            span_length = result.end - result.start
+            # Combine factors: priority (most important), confidence, length
+            return (entity_priority, confidence, span_length)
+        
+        def overlaps(r1, r2):
+            """Check if two results overlap."""
+            return not (r1.end <= r2.start or r2.end <= r1.start)
+        
+        # Sort by start position
+        sorted_results = sorted(results, key=lambda x: x.start)
+        
+        # Filter overlapping entities
+        filtered = []
+        for current in sorted_results:
+            # Check if current overlaps with any already filtered result
+            should_add = True
+            to_remove = []
+            
+            for i, existing in enumerate(filtered):
+                if overlaps(current, existing):
+                    # Compare priorities
+                    if get_priority(current) > get_priority(existing):
+                        # Current has higher priority, remove existing
+                        to_remove.append(i)
+                    else:
+                        # Existing has higher/equal priority, skip current
+                        should_add = False
+                        break
+            
+            # Remove lower priority conflicts
+            for i in reversed(to_remove):
+                filtered.pop(i)
+            
+            # Add current if it wins all conflicts
+            if should_add:
+               filtered.append(current)
+        
+        return filtered
     
     def _custom_hash_redaction(self, text: str, results: List[Any]) -> str:
         """

@@ -4,9 +4,10 @@ import re
 from typing import Any, Dict
 
 from .base import Postprocessor
-from .registry import get_postprocessor_registry
+from .registry import postprocessor_registry
 
 
+@postprocessor_registry.register_decorator("redaction_cleaner")
 class RedactionCleaner(Postprocessor):
     """
     Cleans up redaction artifacts.

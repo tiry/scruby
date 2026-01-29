@@ -3,9 +3,10 @@
 from typing import Any, Dict
 
 from .base import Postprocessor
-from .registry import get_postprocessor_registry
+from .registry import postprocessor_registry
 
 
+@postprocessor_registry.register_decorator("format_preserver")
 class FormatPreserver(Postprocessor):
     """
     Preserves document formatting after redaction.

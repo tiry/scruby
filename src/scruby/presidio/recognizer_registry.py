@@ -8,6 +8,7 @@ from .custom_recognizers import (
     InsuranceIDRecognizer,
     MRNRecognizer,
     PrescriptionNumberRecognizer,
+    SSNRecognizer,
 )
 
 
@@ -26,6 +27,7 @@ class RecognizerRegistry:
     
     def _register_defaults(self) -> None:
         """Register default custom recognizers."""
+        self.add_recognizer(SSNRecognizer())
         self.add_recognizer(MRNRecognizer())
         self.add_recognizer(PrescriptionNumberRecognizer())
         self.add_recognizer(InsuranceIDRecognizer())
