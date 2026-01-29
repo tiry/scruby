@@ -1,5 +1,5 @@
 
-[![CI](https://github.com/tiry/scruby/actions/workflows/ci.yml/badge.svg)](https://github.com/tiry/scruby/actions/workflows/ci.yml)
+[![CI](https://github.com/tiry/scruby/actions/workflows/ci.yaml/badge.svg)](https://github.com/tiry/scruby/actions/workflows/ci.yaml)
 ![Coverage](https://raw.githubusercontent.com/tiry/scruby/badges/.github/coverage.svg)
 
 
