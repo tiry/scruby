@@ -1,3 +1,8 @@
+
+[![CI](https://github.com/tiry/scruby/actions/workflows/ci.yml/badge.svg)](https://github.com/tiry/scruby/actions/workflows/ci.yml)
+![Coverage](https://raw.githubusercontent.com/tiry/scruby/badges/.github/coverage.svg)
+
+
 # Scruby
 
 A Python CLI tool to process and redact HIPAA PII (Personally Identifiable Information) from text data.
