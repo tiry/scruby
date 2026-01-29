@@ -1,0 +1,10 @@
+hmac_secret: ""  # Invalid - empty
+default_confidence_threshold: 1.5  # Invalid - out of range
+processing:
+  max_files: -2  # Invalid - less than -1
+  verbose: false
+presidio:
+  language: "en"
+  spacy_model: "en_core_web_lg"
+  entities:
+    - PERSON

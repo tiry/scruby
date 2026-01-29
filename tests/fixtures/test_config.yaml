@@ -1,0 +1,12 @@
+hmac_secret: "test-secret-key"
+default_confidence_threshold: 0.7
+processing:
+  max_files: 10
+  verbose: true
+presidio:
+  language: "en"
+  spacy_model: "en_core_web_lg"
+  entities:
+    - PERSON
+    - EMAIL_ADDRESS
+    - PHONE_NUMBER

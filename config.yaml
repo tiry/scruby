@@ -1,0 +1,41 @@
+# HMAC secret key for entity hashing
+# WARNING: Keep this secret! Change in production!
+hmac_secret: "default-secret-key-change-in-production"
+
+# Minimum confidence score for entity detection (0.0 to 1.0)
+# Lower values detect more entities but may have false positives
+default_confidence_threshold: 0.5
+
+# Processing options
+processing:
+  # Maximum number of files to process (-1 = unlimited)
+  max_files: -1
+  
+  # Enable verbose logging
+  verbose: false
+
+# Presidio configuration
+presidio:
+  # Language for NLP model
+  language: "en"
+  
+  # spaCy model to use
+  spacy_model: "en_core_web_lg"
+  
+  # Supported entity types (all 18 HIPAA identifiers)
+  entities:
+    - PERSON                    # Names
+    - LOCATION                  # Geographic subdivisions
+    - DATE_TIME                 # Dates
+    - PHONE_NUMBER              # Phone numbers
+    - EMAIL_ADDRESS             # Email addresses
+    - US_SSN                    # Social Security numbers
+    - MEDICAL_RECORD_NUMBER     # MRN (custom)
+    - HEALTH_PLAN_ID            # Health plan numbers (custom)
+    - ACCOUNT_NUMBER            # Account numbers
+    - LICENSE_NUMBER            # Certificate/License numbers (custom)
+    - VIN                       # Vehicle identifiers (custom)
+    - DEVICE_ID                 # Device identifiers
+    - URL                       # URLs
+    - IP_ADDRESS                # IP addresses
+    - CRYPTO                    # Biometric/unique identifiers
