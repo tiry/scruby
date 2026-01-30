@@ -204,20 +204,31 @@ class Pipeline:
         output_path: Optional[Union[str, Path]],
         writer_type: str
     ):
-        """Create and return a writer instance."""
-        # Create writer with appropriate parameters
-        if writer_type == "text_file":
-            if output_path is None:
-                raise PipelineError("output_path is required for text_file writer")
-            return self.writer_registry.create(writer_type, path=output_path)
-        elif writer_type == "stdout":
+        """
+        Create and return a writer instance.
+        
+        Args:
+            output_path: Path for output (file/directory/None for stdout)
+            writer_type: Type of writer to use
+            
+        Returns:
+            Writer instance
+            
+        Raises:
+            PipelineError: If writer creation fails
+        """
+        # Handle specific writer types
+        if writer_type == "stdout":
             return self.writer_registry.create(writer_type)
+        
+        if writer_type == "text_file" and output_path is None:
+            raise PipelineError("output_path is required for text_file writer")
+        
+        # For all other writers, try to create with path if provided
+        if output_path is not None:
+            return self.writer_registry.create(writer_type, path=output_path)
         else:
-            # For extensibility: try to create with path if provided
-            if output_path is not None:
-                return self.writer_registry.create(writer_type, path=output_path)
-            else:
-                return self.writer_registry.create(writer_type)
+            return self.writer_registry.create(writer_type)
 
 
 class PipelineError(Exception):
