@@ -18,6 +18,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Skip CI on badges branch
+    if: github.ref != 'refs/heads/badges'
     
     steps:
     - name: Checkout code
