@@ -3,12 +3,14 @@
 from .base import Postprocessor
 from .format_preserver import FormatPreserver
 from .redaction_cleaner import RedactionCleaner
+from .dict_merger import DictMergerPostprocessor
 from .registry import get_postprocessor_registry, postprocessor_registry
 
 __all__ = [
     "Postprocessor",
     "RedactionCleaner",
     "FormatPreserver",
+    "DictMergerPostprocessor",
     "postprocessor_registry",
     "get_postprocessor_registry",
 ]

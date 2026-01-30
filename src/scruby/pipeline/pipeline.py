@@ -77,7 +77,17 @@ class Pipeline:
             for document in reader.read():
                 # Process single document through pipeline
                 doc = self._preprocess_document(document, preprocessors)
-                doc = self.redactor.redact(doc)
+                
+                # Check if this is structured data with field-level redaction
+                selected_for_redaction = doc.get("metadata", {}).get("selected_for_redaction")
+                
+                if selected_for_redaction:
+                    # Structured data path: redact each field individually
+                    doc = self._redact_fields(doc)
+                else:
+                    # Normal path: redact content string
+                    doc = self.redactor.redact(doc)
+                
                 doc = self._postprocess_document(doc, postprocessors)
                 
                 # Write immediately
@@ -115,6 +125,51 @@ class Pipeline:
         
         return doc
     
+    
+    def _redact_fields(self, document: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Redact structured data fields individually.
+        
+        For structured data with selected_for_redaction metadata,
+        this redacts each field separately and stores results in
+        redacted_fields metadata.
+        
+        Args:
+            document: Document with selected_for_redaction in metadata
+            
+        Returns:
+            Document with redacted_fields in metadata
+        """
+        selected_for_redaction = document.get("metadata", {}).get("selected_for_redaction", {})
+        
+        if not selected_for_redaction:
+            return document
+        
+        # Redact each field individually
+        redacted_fields = {}
+        total_entities = 0
+        
+        for field, value in selected_for_redaction.items():
+            # Create temp document for this field
+            field_doc = {
+                "content": str(value),
+                "metadata": {}
+            }
+            
+            # Redact the field
+            redacted_doc = self.redactor.redact(field_doc)
+            
+            # Store redacted value
+            redacted_fields[field] = redacted_doc["content"]
+            
+            # Accumulate entity count
+            total_entities += redacted_doc.get("metadata", {}).get("redacted_entities", 0)
+        
+        # Store results in document metadata
+        document["metadata"]["redacted_fields"] = redacted_fields
+        document["metadata"]["redacted_entities"] = total_entities
+        
+        return document
     
     def _postprocess_document(
         self,

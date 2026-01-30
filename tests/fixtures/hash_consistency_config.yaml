@@ -1,0 +1,29 @@
+# Configuration for hash consistency testing
+
+hmac_secret: "consistency-test-key"
+redaction_strategy: "hash"
+
+preprocessors:
+  field_selector:
+    fields:
+      - "Email"
+
+postprocessors:
+  dict_merger:
+    preserve_unselected: true
+
+readers:
+  csv_file:
+    delimiter: ","
+    encoding: "utf-8"
+
+writers:
+  csv_file:
+    delimiter: ","
+    encoding: "utf-8"
+    write_header: true
+
+# Presidio configuration
+presidio_confidence_threshold: 0.6
+entities_to_redact:
+  - EMAIL_ADDRESS

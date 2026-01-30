@@ -1,0 +1,47 @@
+# Configuration for structured data (CSV/XLSX) redaction
+
+hmac_secret: "test-structured-key"
+
+preprocessors:
+  field_selector:
+    fields:
+      - "Name"
+      - "Email"
+      - "SSN"
+      - "Notes"
+    separator: " | "
+    preserve_field_mapping: true
+
+postprocessors:
+  dict_merger:
+    preserve_unselected: true
+
+readers:
+  csv_file:
+    delimiter: ","
+    encoding: "utf-8"
+    skip_empty_rows: true
+  
+  xlsx_file:
+    sheet_name: 0
+    skip_empty_rows: true
+
+writers:
+  csv_file:
+    delimiter: ","
+    encoding: "utf-8"
+    write_header: true
+  
+  xlsx_file:
+    sheet_name: "Redacted"
+    write_header: true
+
+# Presidio configuration
+presidio_confidence_threshold: 0.6
+entities_to_redact:
+  - PERSON
+  - EMAIL_ADDRESS
+  - PHONE_NUMBER
+  - US_SSN
+  - ORGANIZATION
+  - DATE_TIME
