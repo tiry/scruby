@@ -34,9 +34,9 @@ class DictMergerPostprocessor(Postprocessor):
         Initialize dict merger.
         
         Args:
-            config: Configuration dictionary
+            config: Configuration dictionary or Config object
         """
-        # Get config if needed
+        # Get config (Config object now has dict-like .get() method)
         merger_config = {}
         if config:
             merger_config = config.get("postprocessors", {}).get("dict_merger", {})

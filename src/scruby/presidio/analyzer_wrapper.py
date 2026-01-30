@@ -71,16 +71,11 @@ class PresidioAnalyzer:
         """
         # Use configured entities if not specified
         if entities is None:
-            if isinstance(self.config, dict):
-                entities = self.config.get("entities_to_redact", [])
-            else:
-                entities = getattr(self.config, "entities_to_redact", [])
+            # Use .get() method (works for both dict and Config dataclass)
+            entities = self.config.get("entities_to_redact", [])
         
         # Get confidence threshold from config
-        if isinstance(self.config, dict):
-            score_threshold = self.config.get("presidio_confidence_threshold", 0.5)
-        else:
-            score_threshold = getattr(self.config, "presidio_confidence_threshold", 0.5)
+        score_threshold = self.config.get("presidio_confidence_threshold", 0.5)
         
         # Analyze text
         results = self.analyzer.analyze(

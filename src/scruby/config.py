@@ -39,6 +39,19 @@ class Config:
     redaction_strategy: str
     processing: ProcessingConfig
     presidio: PresidioConfig
+    _raw_config: dict = None  # Store the full raw config for dict-like access
+
+    def get(self, key: str, default=None):
+        """Dict-like get method to access raw config values."""
+        if self._raw_config:
+            return self._raw_config.get(key, default)
+        return default
+    
+    def __getitem__(self, key: str):
+        """Dict-like access to raw config values."""
+        if self._raw_config:
+            return self._raw_config[key]
+        raise KeyError(key)
 
     def validate(self) -> None:
         """
@@ -115,6 +128,7 @@ def load_config(config_path: str | Path = "config.yaml") -> Config:
             redaction_strategy=data.get("redaction_strategy", "hash"),
             processing=processing,
             presidio=presidio,
+            _raw_config=data,  # Store full raw config for dict-like access
         )
 
         # Validate configuration

@@ -129,3 +129,35 @@ class InsuranceIDRecognizer(PatternRecognizer):
             patterns=self.PATTERNS,
             context=["insurance", "policy", "coverage", "member"]
         )
+
+
+class InternationalPhoneRecognizer(PatternRecognizer):
+    """
+    Recognizer for international phone numbers.
+    
+    Detects international phone numbers with country codes:
+    - +91 1234567890 (India)
+    - +44 20 1234 5678 (UK)
+    - +1 234 567 8900 (US)
+    - +86 138 0000 0000 (China)
+    """
+    
+    PATTERNS = [
+        Pattern(
+            name="intl_phone_with_plus",
+            regex=r"\+\d{1,3}\s?\d{7,15}",
+            score=0.85
+        ),
+        Pattern(
+            name="intl_phone_formatted",
+            regex=r"\+\d{1,3}[\s\-]?\(?\d{1,4}\)?[\s\-]?\d{1,4}[\s\-]?\d{1,9}",
+            score=0.80
+        ),
+    ]
+    
+    def __init__(self):
+        super().__init__(
+            supported_entity="PHONE_NUMBER",
+            patterns=self.PATTERNS,
+            context=["phone", "mobile", "tel", "contact", "call"]
+        )

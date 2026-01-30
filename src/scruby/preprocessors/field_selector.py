@@ -39,9 +39,9 @@ class FieldSelectorPreprocessor(Preprocessor):
         Initialize field selector.
         
         Args:
-            config: Configuration dictionary
+            config: Configuration dictionary or Config object  
         """
-        # Get field selector config
+        # Get field selector config (Config object now has dict-like .get() method)
         selector_config = {}
         if config:
             selector_config = config.get("preprocessors", {}).get("field_selector", {})

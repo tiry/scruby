@@ -96,6 +96,10 @@ class Pipeline:
                 # Store for return value
                 processed_documents.append(doc)
             
+            # Close writer to ensure all data is flushed to disk
+            if hasattr(writer, 'close'):
+                writer.close()
+            
             return processed_documents
             
         except Exception as e:
@@ -120,7 +124,11 @@ class Pipeline:
         
         doc = document
         for name in preprocessor_names:
-            preprocessor = self.preprocessor_registry.create(name)
+            # Only pass config to preprocessors that accept it (field_selector)
+            if name == "field_selector":
+                preprocessor = self.preprocessor_registry.create(name, config=self.config)
+            else:
+                preprocessor = self.preprocessor_registry.create(name)
             doc = preprocessor.process(doc)
         
         return doc
@@ -182,7 +190,11 @@ class Pipeline:
         
         doc = document
         for name in postprocessor_names:
-            postprocessor = self.postprocessor_registry.create(name)
+            # Only pass config to postprocessors that accept it (dict_merger)
+            if name == "dict_merger":
+                postprocessor = self.postprocessor_registry.create(name, config=self.config)
+            else:
+                postprocessor = self.postprocessor_registry.create(name)
             doc = postprocessor.process(doc)
         
         return doc

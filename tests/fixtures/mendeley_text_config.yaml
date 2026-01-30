@@ -1,18 +1,12 @@
-# Configuration for Mendeley dataset redaction
+# Configuration for Mendeley TEXT field redaction
 
-hmac_secret: "mendeley-test-key"
+hmac_secret: "mendeley-text-test-key"
 default_confidence_threshold: 0.5
 
 preprocessors:
   field_selector:
     fields:
-      - "Name"
-      - "Credit Card"
-      - "Email"
-      - "URL"
-      - "Phone"
-      - "Company"
-      - "SSN"
+      - "Text"
     separator: " | "
     preserve_field_mapping: true
 
@@ -39,5 +33,4 @@ entities_to_redact:
   - US_SSN
   - CREDIT_CARD
   - URL
-  - ORGANIZATION
   - LOCATION

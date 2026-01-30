@@ -6,6 +6,7 @@ from presidio_analyzer import EntityRecognizer
 
 from .custom_recognizers import (
     InsuranceIDRecognizer,
+    InternationalPhoneRecognizer,
     MRNRecognizer,
     PrescriptionNumberRecognizer,
     SSNRecognizer,
@@ -31,6 +32,7 @@ class RecognizerRegistry:
         self.add_recognizer(MRNRecognizer())
         self.add_recognizer(PrescriptionNumberRecognizer())
         self.add_recognizer(InsuranceIDRecognizer())
+        self.add_recognizer(InternationalPhoneRecognizer())
     
     def add_recognizer(self, recognizer: EntityRecognizer) -> None:
         """

@@ -42,12 +42,13 @@ class TestRecognizerRegistry:
         registry = RecognizerRegistry()
         recognizers = registry.get_all_recognizers()
         
-        assert len(recognizers) == 4
+        assert len(recognizers) == 5
         entity_types = [r.supported_entities[0] for r in recognizers]
         assert "US_SSN" in entity_types
         assert "MEDICAL_RECORD_NUMBER" in entity_types
         assert "PRESCRIPTION_NUMBER" in entity_types
         assert "INSURANCE_ID" in entity_types
+        assert "PHONE_NUMBER" in entity_types
 
     def test_add_custom_recognizer(self):
         """Add new recognizer to registry."""
