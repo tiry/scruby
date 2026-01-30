@@ -178,8 +178,10 @@ class TestPostprocessorErrorHandling:
         # Then apply preserver
         result2 = preserver.process(result1)
         
-        # Should have both transformations applied
-        assert result2["content"] != document["content"]
+        # Verify transformations were applied
+        assert result1["content"] == "[REDACTED] text"
+        assert result2["content"] == "[REDACTED] text"
+        assert result2["metadata"]["source"] == "test"
         
         # Should have both transformations applied
         assert result2["content"] != document["content"]

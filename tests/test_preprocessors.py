@@ -280,7 +280,9 @@ class TestPreprocessorEdgeCases:
         result = preprocessor.process(document)
         
         # Should preserve special characters
-        assert "©" in result["content"] or "trademark" in result["content"]
+        assert "©" in result["content"]
+        assert "™" in result["content"]
+        assert "®" in result["content"]
     
     def test_text_cleaner_mixed_punctuation(self):
         """Handle mixed punctuation marks."""

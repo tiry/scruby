@@ -347,7 +347,8 @@ class TestEdgeCaseIntegration:
         assert output_file.exists()
         output_text = output_file.read_text()
         # Special characters should be preserved
-        assert "©" in output_text or "Hospital" in output_text
+        assert "©" in output_text
+        assert "™" in output_text
         # Email should be redacted
         assert "jose@example.com" not in output_text
 
