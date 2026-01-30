@@ -2,7 +2,7 @@
 
 import csv
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 from .base import Writer
 from .registry import writer_registry

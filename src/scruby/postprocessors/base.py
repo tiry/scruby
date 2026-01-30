@@ -22,5 +22,14 @@ class Postprocessor(ABC):
             
         Returns:
             Processed document
+            
+        Raises:
+            PostprocessorError: If processing fails
         """
         pass
+
+
+class PostprocessorError(Exception):
+    """Raised when a postprocessor encounters an error."""
+
+    pass
