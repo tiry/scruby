@@ -46,12 +46,6 @@ class Config:
         if self._raw_config:
             return self._raw_config.get(key, default)
         return default
-    
-    def __getitem__(self, key: str):
-        """Dict-like access to raw config values."""
-        if self._raw_config:
-            return self._raw_config[key]
-        raise KeyError(key)
 
     def validate(self) -> None:
         """

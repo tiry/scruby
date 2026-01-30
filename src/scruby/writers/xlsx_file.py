@@ -1,7 +1,7 @@
 """XLSX file writer for structured data."""
 
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 import openpyxl
 from openpyxl import Workbook

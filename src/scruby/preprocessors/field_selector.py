@@ -1,6 +1,6 @@
 """Field selector preprocessor for structured data."""
 
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from .base import Preprocessor
 from .registry import preprocessor_registry
@@ -67,7 +67,7 @@ class FieldSelectorPreprocessor(Preprocessor):
         
         if not self.fields:
             # No fields configured, select all fields
-           selected_fields = list(original_data.keys())
+            selected_fields = list(original_data.keys())
         else:
             # Select only configured fields that exist
             selected_fields = [f for f in self.fields if f in original_data]

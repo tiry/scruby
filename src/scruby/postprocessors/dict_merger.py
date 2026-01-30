@@ -1,6 +1,6 @@
 """Dictionary merger postprocessor for structured data."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from .base import Postprocessor
 from .registry import postprocessor_registry

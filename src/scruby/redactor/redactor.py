@@ -35,6 +35,22 @@ class Redactor:
         self.analyzer = analyzer or PresidioAnalyzer(config=self.config)
         self.anonymizer = AnonymizerEngine()
     
+    def _get_config_value(self, key: str, default=None):
+        """
+        Get configuration value with support for both dict and Config object.
+        
+        Args:
+            key: Configuration key
+            default: Default value if key not found
+            
+        Returns:
+            Configuration value or default
+        """
+        if isinstance(self.config, dict):
+            return self.config.get(key, default)
+        else:
+            return getattr(self.config, key, default)
+    
     def redact(
         self,
         document: Dict[str, Any],
@@ -69,10 +85,7 @@ class Redactor:
             
             # Get redaction strategy
             if strategy is None:
-                if isinstance(self.config, dict):
-                    strategy = self.config.get("redaction_strategy", "replace")
-                else:
-                    strategy = getattr(self.config, "redaction_strategy", "replace")
+                strategy = self._get_config_value("redaction_strategy", "replace")
             
             # Use custom hash implementation for "hash" strategy
             if strategy == "hash":
@@ -132,11 +145,7 @@ class Redactor:
     
     def _get_encryption_key(self) -> str:
         """Get encryption key from config."""
-        if isinstance(self.config, dict):
-            key = self.config.get("hmac_secret", "default-key-change-me")
-        else:
-            key = getattr(self.config, "hmac_secret", "default-key-change-me")
-        return key
+        return self._get_config_value("hmac_secret", "default-key-change-me")
     
     def _resolve_conflicts(self, results: List[Any]) -> List[Any]:
         """
