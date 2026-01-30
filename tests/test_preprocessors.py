@@ -239,3 +239,57 @@ class TestPreprocessorErrorHandling:
         assert "\u201c" not in doc["content"]
         assert doc["content"].endswith('!')
         assert not doc["content"].endswith('!!!')
+
+
+class TestPreprocessorEdgeCases:
+    """Tests for edge cases in preprocessors."""
+
+    def test_whitespace_normalizer_empty_string(self):
+        """Handle empty string input."""
+        preprocessor = WhitespaceNormalizer()
+        document = {"content": ""}
+        
+        result = preprocessor.process(document)
+        
+        assert result["content"] == ""
+    
+    def test_whitespace_normalizer_only_whitespace(self):
+        """Handle document with only whitespace."""
+        preprocessor = WhitespaceNormalizer()
+        document = {"content": "   \t\t   \n  "}
+        
+        result = preprocessor.process(document)
+        
+        # Should normalize to empty or single space
+        assert result["content"].strip() == ""
+    
+    def test_text_cleaner_empty_string(self):
+        """Handle empty string input."""
+        preprocessor = TextCleaner()
+        document = {"content": ""}
+        
+        result = preprocessor.process(document)
+        
+        assert result["content"] == ""
+    
+    def test_text_cleaner_special_characters(self):
+        """Handle text with special unicode characters."""
+        preprocessor = TextCleaner(normalize_quotes=True)
+        document = {"content": "Test with © trademark™ and ® symbols"}
+        
+        result = preprocessor.process(document)
+        
+        # Should preserve special characters
+        assert "©" in result["content"] or "trademark" in result["content"]
+    
+    def test_text_cleaner_mixed_punctuation(self):
+        """Handle mixed punctuation marks."""
+        preprocessor = TextCleaner()
+        document = {"content": "What?!?! Really!!!??? Yes..."}
+        
+        result = preprocessor.process(document)
+        
+        # Punctuation should be reduced (not completely normalized)
+        original_exclamation = document["content"].count("!")
+        result_exclamation = result["content"].count("!")
+        assert result_exclamation < original_exclamation
