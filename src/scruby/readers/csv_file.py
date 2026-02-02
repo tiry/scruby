@@ -2,7 +2,7 @@
 
 import csv
 from pathlib import Path
-from typing import Dict, Iterator, Any
+from typing import Any, Dict, Iterator
 
 from .base import Reader
 from .registry import reader_registry

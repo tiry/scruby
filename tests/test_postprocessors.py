@@ -178,5 +178,63 @@ class TestPostprocessorErrorHandling:
         # Then apply preserver
         result2 = preserver.process(result1)
         
-        assert "[REDACTED] text" in result2["content"]
+        # Verify transformations were applied
+        assert result1["content"] == "[REDACTED] text"
+        assert result2["content"] == "[REDACTED] text"
         assert result2["metadata"]["source"] == "test"
+        
+        # Should have both transformations applied
+        assert result2["content"] != document["content"]
+
+
+class TestPostprocessorEdgeCases:
+    """Tests for edge cases in postprocessors."""
+
+    def test_redaction_cleaner_empty_string(self):
+        """Handle empty string input."""
+        cleaner = RedactionCleaner()
+        document = {"content": ""}
+        
+        result = cleaner.process(document)
+        
+        assert result["content"] == ""
+    
+    def test_redaction_cleaner_no_redactions(self):
+        """Handle text with no redaction markers."""
+        cleaner = RedactionCleaner()
+        document = {"content": "Normal text without any redactions"}
+        
+        result = cleaner.process(document)
+        
+        assert result["content"] == "Normal text without any redactions"
+    
+    def test_redaction_cleaner_only_redactions(self):
+        """Handle text that is entirely redacted."""
+        cleaner = RedactionCleaner()
+        document = {"content": "[REDACTED] [REDACTED] [REDACTED]"}
+        
+        result = cleaner.process(document)
+        
+        # Should merge all consecutive redactions
+        assert result["content"].count("[REDACTED]") == 1
+    
+    def test_format_preserver_empty_metadata(self):
+        """Handle document with no metadata."""
+        preserver = FormatPreserver()
+        document = {"content": "Test content"}
+        
+        result = preserver.process(document)
+        
+        # FormatPreserver doesn't add metadata, it only preserves format info
+        # Just verify it doesn't crash
+        assert result["content"] == "Test content"
+    
+    def test_format_preserver_multiline_empty(self):
+        """Handle empty multiline content."""
+        preserver = FormatPreserver()
+        document = {"content": "", "metadata": {}}
+        
+        result = preserver.process(document)
+        
+        # Verify it processes without error
+        assert result["content"] == ""

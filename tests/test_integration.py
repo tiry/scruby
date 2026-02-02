@@ -278,5 +278,80 @@ class TestSnapshotComparison:
         assert results[0]["metadata"]["redacted_entities"] > 0
 
 
+class TestEdgeCaseIntegration:
+    """Integration tests for edge cases and error conditions."""
+    
+    def test_empty_file_processing(self, tmp_path):
+        """Test processing an empty file."""
+        # Create empty input file
+        input_file = tmp_path / "empty.txt"
+        input_file.write_text("")
+        output_file = tmp_path / "output.txt"
+        
+        # Process file
+        pipeline = Pipeline()
+        results = pipeline.process(
+            input_path=str(input_file),
+            output_path=str(output_file),
+            reader_type="text_file",
+            writer_type="text_file"
+        )
+        
+        # Verify results
+        assert len(results) == 1
+        assert results[0]["content"] == ""
+        assert output_file.exists()
+    
+    def test_file_with_only_redactions(self, tmp_path):
+        """Test file containing only PII data."""
+        # Create file with multiple emails
+        input_file = tmp_path / "pii_only.txt"
+        input_file.write_text("john@example.com jane@example.com admin@example.com")
+        output_file = tmp_path / "output.txt"
+        
+        # Process file
+        pipeline = Pipeline()
+        results = pipeline.process(
+            input_path=str(input_file),
+            output_path=str(output_file),
+            reader_type="text_file",
+            writer_type="text_file"
+        )
+        
+        # Verify all emails were redacted
+        assert len(results) == 1
+        output_text = output_file.read_text()
+        assert "john@example.com" not in output_text
+        assert "jane@example.com" not in output_text
+        assert "admin@example.com" not in output_text
+        # Should have hash markers
+        assert "<EMAIL_ADDRESS:" in output_text
+    
+    def test_mixed_content_with_special_characters(self, tmp_path):
+        """Test file with special characters and unicode."""
+        input_file = tmp_path / "special.txt"
+        input_file.write_text("Patient: José García\nEmail: jose@example.com\n© 2024 Hospital™")
+        output_file = tmp_path / "output.txt"
+        
+        # Process file
+        pipeline = Pipeline()
+        results = pipeline.process(
+            input_path=str(input_file),
+            output_path=str(output_file),
+            reader_type="text_file",
+            writer_type="text_file"
+        )
+        
+        # Verify processing succeeded
+        assert len(results) == 1
+        assert output_file.exists()
+        output_text = output_file.read_text()
+        # Special characters should be preserved
+        assert "©" in output_text
+        assert "™" in output_text
+        # Email should be redacted
+        assert "jose@example.com" not in output_text
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

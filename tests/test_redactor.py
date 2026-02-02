@@ -55,17 +55,23 @@ class TestRedactionStrategies:
         assert result["metadata"]["redaction_strategy"] == "mask"
 
     def test_redact_with_hash_strategy(self):
-        """Hash entities."""
+        """Hash entities with detailed verification."""
         redactor = Redactor()
         document = {"content": "Contact john.doe@example.com"}
         
         result = redactor.redact(document, entities=["EMAIL_ADDRESS"], strategy="hash")
         
+        # Verify original email is gone
         assert "john.doe@example.com" not in result["content"]
+        # Verify hash format is present (e.g., <EMAIL_ADDRESS:abc123>)
+        assert "<EMAIL_ADDRESS:" in result["content"]
+        assert ">" in result["content"]
+        # Verify metadata
         assert result["metadata"]["redaction_strategy"] == "hash"
+        assert result["metadata"]["redacted_entities"] >= 1
 
     def test_redact_builtin_entities(self):
-        """Redact built-in entity types."""
+        """Redact built-in entity types with verification."""
         redactor = Redactor()
         document = {"content": "Contact John Doe at john.doe@example.com"}
         
@@ -73,6 +79,10 @@ class TestRedactionStrategies:
         
         # Should redact at least one entity
         assert result["metadata"]["redacted_entities"] > 0
+        # Verify content was actually modified
+        assert result["content"] != document["content"]
+        # Check that sensitive info is removed
+        assert "john.doe@example.com" not in result["content"]
 
     def test_redact_custom_entities(self):
         """Redact custom HIPAA entities."""
